@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define QTD_LINHAS 100
+#define QTD_COLUNAS 100
+
+void lerMatriz(int mat[][QTD_COLUNAS], int lin, int col);
+void preencherMatrizAleatoria(int mat[][QTD_COLUNAS], int lin, int col);
+void imprimirMatriz(int mat[][QTD_COLUNAS], int lin, int col);
+int contarImpares(int mat[][QTD_COLUNAS], int lin, int col);
+int somarElementos(int mat[][QTD_COLUNAS], int lin, int col);
+float calcularMedia(int soma, int totalElementos);
+void mediaPorLinha(int mat[][QTD_COLUNAS], int lin, int col);
+void buscarElemento(int mat[][QTD_COLUNAS], int lin, int col, int elemento);
+int lerDentroIntervalo(int min, int max);
+int lerDentroIntervalo(int min, int max);
+
+int main() {
+    int qtdLinhas, qtdColunas;
+    int matriz[QTD_LINHAS][QTD_COLUNAS];
+
+
+    printf("Digite a quantidade de linhas (1-%d): ", QTD_LINHAS);
+    qtdLinhas = lerDentroIntervalo(1, QTD_LINHAS);
+    printf("Digite a quantidade de colunas (1-%d): ", QTD_COLUNAS);
+    qtdColunas = lerDentroIntervalo(1, QTD_COLUNAS);
+
+    
+    preencherMatrizAleatoria(matriz, qtdLinhas, qtdColunas);
+    printf("\n--------------------\n");
+    imprimirMatriz(matriz, qtdLinhas, qtdColunas);
+
+     
+    int impares = contarImpares(matriz, qtdLinhas, qtdColunas);
+    printf("\nQuantidade de números ímpares= %d\n", impares);
+
+    
+    int elemento;
+    printf("Digite um número a ser buscado na matriz: ");
+    scanf("%d", &elemento);
+    buscarElemento(matriz, qtdLinhas, qtdColunas, elemento);
+
+    
+    int soma = somarElementos(matriz, qtdLinhas, qtdColunas);
+    printf("\nSoma de todos os elementos da matriz: %d\n", soma);
+
+    
+    float mediaTotal = calcularMedia(soma, qtdLinhas * qtdColunas);
+    printf("Média de todos os elementos da matriz: %.2f\n", mediaTotal);
+
+    
+    printf("\nMédia de cada linha da matriz:\n");
+    mediaPorLinha(matriz, qtdLinhas, qtdColunas);
+
+    return 0;
+}
+
+void preencherMatrizAleatoria(int mat[][QTD_COLUNAS], int lin, int col) {
+    for (int i = 0; i < lin; ++i) {
+        for (int j = 0; j < col; ++j) {
+            mat[i][j] = rand() % 100 + 1; 
+        }
+    }
+}
+
+void imprimirMatriz(int mat[][QTD_COLUNAS], int lin, int col) {
+    for (int i = 0; i < lin; ++i) {
+        for (int j = 0; j < col; ++j) {
+            printf("%d\t", mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int contarImpares(int mat[][QTD_COLUNAS], int lin, int col) {
+    int contagem = 0;
+    for (int i = 0; i < lin; ++i) {
+        for (int j = 0; j < col; ++j) {
+            if (mat[i][j] % 2 != 0) {
+                contagem++;
+            }
+        }
+    }
+    return contagem;
+}
+
+void buscarElemento(int mat[][QTD_COLUNAS], int lin, int col, int elemento) {
+    int encontrado = 0;
+    for (int i = 0; i < lin; ++i) {
+        for (int j = 0; j < col; ++j) {
+            if (mat[i][j] == elemento) {
+                printf("Elemento %d encontrado na posição [%d][%d]\n", elemento, i, j);
+                encontrado = 1;
+            }
+        }
+    }
+    if (!encontrado) {
+        printf("Elemento %d não encontrado na matriz.\n", elemento);
+    }
+}
+
+int somarElementos(int mat[][QTD_COLUNAS], int lin, int col) {
+    int soma = 0;
+    for (int i = 0; i < lin; ++i) {
+        for (int j = 0; j < col; ++j) {
+            soma += mat[i][j];
+        }
+    }
+    return soma;
+}
+
+float calcularMedia(int soma, int totalElementos) {
+    return (float)soma / totalElementos;
+}
+
+void mediaPorLinha(int mat[][QTD_COLUNAS], int lin, int col) {
+    for (int i = 0; i < lin; ++i) {
+        int somaLinha = 0;
+        for (int j = 0; j < col; ++j) {
+            somaLinha += mat[i][j];
+        }
+        float media = (float)somaLinha / col;
+        printf("Média da linha %d: %.2f\n", i, media);
+    }
+}
+
+int lerDentroIntervalo(int min, int max) {
+    int valor;
+    scanf("%d", &valor);
+    while (valor < min || valor > max) {
+        printf("Valor inválido! Digite um valor entre %d e %d: ", min, max);
+        scanf("%d", &valor);
+    }
+    return valor;
+}
