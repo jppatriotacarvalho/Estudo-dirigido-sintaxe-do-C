@@ -1,0 +1,134 @@
+#include <stdio.h>
+
+#define QTD_LINHAS_A 3
+#define QTD_COLUNAS_A 3
+#define QTD_LINHAS_B 3
+#define QTD_COLUNAS_B 3
+#define QTD_LINHAS_C 3
+#define QTD_COLUNAS_C 3
+
+
+void multiplicarMatrizes(int matrizA[QTD_LINHAS_A][QTD_COLUNAS_A], int linA, int colA,
+                         int matrizB[QTD_LINHAS_B][QTD_COLUNAS_B], int linB, int colB,
+                         int matrizC[QTD_LINHAS_C][QTD_COLUNAS_C], int linC, int colC,
+                         int matrizMult[QTD_LINHAS_A][QTD_COLUNAS_B],
+                         int matrizMult1[QTD_LINHAS_B][QTD_COLUNAS_C],
+                         int matrizMult2[QTD_LINHAS_C][QTD_COLUNAS_A]) {
+    
+    
+    if (colA != linB) {
+        printf("Erro, pois o numero de colunas de A não foi igual ao numero de linhas de B.\n");
+        return;
+    }
+    if (colB != linC) {
+        printf("Erro, pois o numero de colunas de B nao foi igual ao nuemro de linhas de C.\n");
+        return;
+    }
+    if (colC != linA) {
+        printf("Erro, pois o numero de colunas de C nao foi igual ao numro de linhas deA\n");
+        return;
+    }
+
+    
+    for (int i = 0; i < linA; i++) {
+        for (int j = 0; j < colB; j++) {
+            matrizMult[i][j] = 0;
+        }
+    }
+    
+    for (int i = 0; i < linB; i++) {
+        for (int j = 0; j < colC; j++) {
+            matrizMult1[i][j] = 0;
+        }
+    }
+
+    for (int i = 0; i < linC; i++) {
+        for (int j = 0; j < colA; j++) {
+            matrizMult2[i][j] = 0;
+        }
+    }
+
+    
+    for (int i = 0; i < linA; i++) {
+        for (int j = 0; j < colB; j++) {
+            for (int k = 0; k < colA; k++) {
+                matrizMult[i][j] += matrizA[i][k] * matrizB[k][j];
+            }
+        }
+    }
+
+    
+    for (int i = 0; i < linB; i++) {
+        for (int j = 0; j < colC; j++) {
+            for (int k = 0; k < colB; k++) {
+                matrizMult1[i][j] += matrizB[i][k] * matrizC[k][j];
+            }
+        }
+    }
+
+    
+    for (int i = 0; i < linC; i++) {
+        for (int j = 0; j < colA; j++) {
+            for (int k = 0; k < colC; k++) {
+                matrizMult2[i][j] += matrizC[i][k] * matrizA[k][j];
+            }
+        }
+    }
+}
+
+int main() {
+    
+    int matrizA[QTD_LINHAS_A][QTD_COLUNAS_A] = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {2, 3, 4}
+    };
+    
+    int matrizB[QTD_LINHAS_B][QTD_COLUNAS_B] = {
+        {7, 8, 6},
+        {9, 10, 4},
+        {11, 12, 4}
+    };
+    
+    int matrizC[QTD_LINHAS_C][QTD_COLUNAS_C] = {
+        {10, 8, 11},
+        {4, 10, 6},
+        {31, 12, 11}
+    };
+    
+    int matrizMult[QTD_LINHAS_A][QTD_COLUNAS_B];
+    int matrizMult1[QTD_LINHAS_B][QTD_COLUNAS_C];
+    int matrizMult2[QTD_LINHAS_C][QTD_COLUNAS_A];
+    
+    
+    multiplicarMatrizes(matrizA, QTD_LINHAS_A, QTD_COLUNAS_A, matrizB, QTD_LINHAS_B, QTD_COLUNAS_B, matrizC, QTD_LINHAS_C, QTD_COLUNAS_C, matrizMult, matrizMult1, matrizMult2);
+
+   
+    printf("Multiplicacao entre A e B:\n");
+    for (int i = 0; i < QTD_LINHAS_A; i++) {
+        for (int j = 0; j < QTD_COLUNAS_B; j++) {
+            printf("%d ", matrizMult[i][j]);
+        }
+        printf("\n");
+    }
+
+    
+    printf("Multiplicacao entre B e C:\n");
+    for (int i = 0; i < QTD_LINHAS_B; i++) {
+        for (int j = 0; j < QTD_COLUNAS_C; j++) {
+            printf("%d ", matrizMult1[i][j]);
+        }
+        printf("\n");
+    }
+
+    
+    printf("Multiplicacao entre C e A:\n");
+    for (int i = 0; i < QTD_LINHAS_C; i++) {
+        for (int j = 0; j < QTD_COLUNAS_A; j++) {
+            printf("%d ", matrizMult2[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
