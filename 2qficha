@@ -1,0 +1,199 @@
+#include <stdio.h>
+#include <string.h>
+
+#define TAM 100  
+#define PRODUTOS 40
+
+struct Produto {
+    int codigo;
+    char descricao[TAM];  
+    float vn;  
+    int qe;  
+};
+
+void listarProdutos(struct Produto produtos[], int tamanho);
+void listarProdutosSemEstoque(struct Produto produtos[], int tamanho);
+void alterarQuantidadeEstoque(struct Produto produtos[], int tamanho, int codigo, int nova_quantidade);
+void processarVenda(struct Produto produtos[], int tamanho, int codigo, int quantidade);
+int obterQuantidadeEstoque(struct Produto produtos[], int tamanho, int codigo);
+float obterValorUnitario(struct Produto produtos[], int tamanho, int codigo);
+void modificarValorUnitario(struct Produto produtos[], int tamanho, int codigo);
+void adicionarProduto(struct Produto produtos[], int *tamanho);
+
+int main() {
+    struct Produto produtos[PRODUTOS];
+    int tamanho = 0; 
+    int codigo, quantidade;
+
+    while (1) {
+        int opcao;
+        printf("\nMenu:\n");
+        printf("1. Cadastrar produto\n");
+        printf("2. Alterar valor unitario\n");
+        printf("3. Consultar valor unitario\n");
+        printf("4. Consultar quantidade em estoque\n");
+        printf("5. Realizar venda\n");
+        printf("6. Alterar quantidade em estoque\n");
+        printf("7. Listar produtos\n");
+        printf("8. Listar produtos sem estoque\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                adicionarProduto(produtos, &tamanho);
+                break;
+            case 2:
+                printf("\nInforme o codigo do produto para alterar o valor unitario: ");
+                scanf("%d", &codigo);
+                modificarValorUnitario(produtos, tamanho, codigo);
+                break;
+            case 3:
+                printf("\nInforme o codigo do produto para consultar o valor unitario: ");
+                scanf("%d", &codigo);
+                printf("Valor unitario: %.2f\n", obterValorUnitario(produtos, tamanho, codigo));
+                break;
+            case 4:
+                printf("\nInforme o codigo do produto para consultar a quantidade em estoque: ");
+                scanf("%d", &codigo);
+                printf("Quantidade em estoque: %d\n", obterQuantidadeEstoque(produtos, tamanho, codigo));
+                break;
+            case 5:
+                printf("\nInforme o codigo e a quantidade para realizar uma venda: ");
+                scanf("%d %d", &codigo, &quantidade);
+                processarVenda(produtos, tamanho, codigo, quantidade);
+                break;
+            case 6:
+                printf("\nInforme o codigo do produto para atualizar a quantidade em estoque: ");
+                scanf("%d", &codigo);
+                printf("Informe a nova quantidade em estoque: ");
+                scanf("%d", &quantidade);
+                alterarQuantidadeEstoque(produtos, tamanho, codigo, quantidade);
+                break;
+            case 7:
+                listarProdutos(produtos, tamanho);
+                break;
+            case 8:
+                listarProdutosSemEstoque(produtos, tamanho);
+                break;
+            case 0:
+                return 0;
+            default:
+                printf("Opcao invalida! Tente novamente.\n");
+        }
+    }
+}
+
+void adicionarProduto(struct Produto produtos[], int *tamanho) {
+    if (*tamanho >= PRODUTOS) {
+        printf("Limite de produtos atingido.\n");
+        return;
+    }
+
+    struct Produto novo_produto;
+    printf("Informe o codigo do produto: ");
+    scanf("%d", &novo_produto.codigo);
+
+    printf("Informe a descricao do produto: ");
+    scanf(" %[^\n]", novo_produto.descricao);
+
+    printf("Informe o valor unitario do produto: ");
+    scanf("%f", &novo_produto.vn);  
+
+    printf("Informe a quantidade em estoque do produto: ");
+    scanf("%d", &novo_produto.qe);  
+
+    produtos[*tamanho] = novo_produto;
+    (*tamanho)++;
+}
+
+void modificarValorUnitario(struct Produto produtos[], int tamanho, int codigo) {
+    for (int i = 0; i < tamanho; i++) {
+        if (produtos[i].codigo == codigo) {
+            printf("Informe o novo valor unitario para o produto %s: ", produtos[i].descricao);
+            scanf("%f", &produtos[i].vn);  
+            printf("Valor atualizado com sucesso.\n");
+            return;
+        }
+    }
+    printf("Produto com codigo %d nao encontrado.\n", codigo);
+}
+
+float obterValorUnitario(struct Produto produtos[], int tamanho, int codigo) {
+    for (int i = 0; i < tamanho; i++) {
+        if (produtos[i].codigo == codigo) {
+            return produtos[i].vn;  
+        }
+    }
+    printf("Produto com codigo %d nao encontrado.\n", codigo);
+    return -1.0;
+}
+
+int obterQuantidadeEstoque(struct Produto produtos[], int tamanho, int codigo) {
+    for (int i = 0; i < tamanho; i++) {
+        if (produtos[i].codigo == codigo) {
+            return produtos[i].qe;  
+        }
+    }
+    printf("Produto com codigo %d nao encontrado.\n", codigo);
+    return -1;
+}
+
+void processarVenda(struct Produto produtos[], int tamanho, int codigo, int quantidade) {
+    for (int i = 0; i < tamanho; i++) {
+        if (produtos[i].codigo == codigo) {
+            if (produtos[i].qe == 0) {
+                printf("Produto %s esta fora de estoque.\n", produtos[i].descricao);
+            } else if (produtos[i].qe >= quantidade) {
+                produtos[i].qe -= quantidade;
+                printf("Venda realizada! Valor total: R$ %.2f\n", produtos[i].vn * quantidade);  
+            } else {
+                printf("Estoque insuficiente. Deseja comprar %d unidades disponiveis? (1 - Sim / 0 - Nao): ", produtos[i].qe);
+                int resposta;
+                scanf("%d", &resposta);
+                if (resposta == 1) {
+                    printf("Venda realizada com estoque disponivel. Valor total: R$ %.2f\n", produtos[i].vn * produtos[i].qe);  
+                    produtos[i].qe = 0;
+                } else {
+                    printf("Venda nao realizada.\n");
+                }
+            }
+            return;
+        }
+    }
+    printf("Produto com codigo %d nao encontrado.\n", codigo);
+}
+
+void alterarQuantidadeEstoque(struct Produto produtos[], int tamanho, int codigo, int nova_quantidade) {
+    for (int i = 0; i < tamanho; i++) {
+        if (produtos[i].codigo == codigo) {
+            produtos[i].qe = nova_quantidade;
+            printf("Quantidade em estoque atualizada com sucesso.\n");
+            return;
+        }
+    }
+    printf("Produto com codigo %d nao encontrado.\n", codigo);
+}
+
+void listarProdutos(struct Produto produtos[], int tamanho) {
+    printf("Codigo | Descricao\n");
+    for (int i = 0; i < tamanho; i++) {
+        printf("%d | %s\n", produtos[i].codigo, produtos[i].descricao);
+    }
+}
+
+void listarProdutosSemEstoque(struct Produto produtos[], int tamanho) {
+    printf("Produtos sem estoque:\n");
+    printf("Codigo | Descricao\n");
+    int encontrou = 0;
+    for (int i = 0; i < tamanho; i++) {
+        if (produtos[i].qe == 0) {
+            printf("%d | %s\n", produtos[i].codigo, produtos[i].descricao);
+            encontrou = 1;
+        }
+    }
+    if (!encontrou) {
+        printf("Nenhum produto sem estoque.\n");
+    }
+}
